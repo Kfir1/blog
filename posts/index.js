@@ -13,6 +13,7 @@ const app = express();
 // parse body of request to json
 app.use(bodyParser.json());
 
+// object for posts
 const posts = {};
 
 // route for GET all posts posts
@@ -22,7 +23,7 @@ app.get("/posts", (req, res) => {
 });
 
 // route for POST new posts
-app.post("/post", (req, res) => {
+app.post("/posts", (req, res) => {
   //create random id with randomBytes
   // 4 bytes of data, convert to string in hex
   const id = randomBytes(4).toString("hex");
