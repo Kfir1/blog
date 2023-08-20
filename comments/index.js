@@ -8,10 +8,17 @@ const bodyParser = require("body-parser");
 // assign it to the object the user sent and store it in memory
 const { randomBytes } = require("crypto");
 
+// handling cors errors
+const cors = require("cors");
+
 const app = express();
 
 // parse body of request to json
 app.use(bodyParser.json());
+
+// connect cors to the express application as a middleware
+// make sure to call cors() cause it's a function
+app.use(cors());
 
 // object for comments by post id
 const commentsByPostId = {};
