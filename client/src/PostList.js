@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import CommentCreate from "./CommentCreate";
+import CommentList from "./CommentList";
 
 export default () => {
   // default value will be empty object {}, same as (const posts = {};) on posts service (index.js file)
@@ -8,7 +9,7 @@ export default () => {
 
   const fetchPosts = async () => {
     const res = await axios.get("http://localhost:4000/posts");
-
+    // posts service is hosted on port 4001
     setPosts(res.data);
   };
 
@@ -28,7 +29,8 @@ export default () => {
       >
         <div className="card-body">
           <h3>{post.title}</h3>
-          <CommentCreate postId={post.id} />
+          <CommentList postId={post.id} />
+          <CommentCreate postId={post.id} /> {/* show comment by post id */}
         </div>
       </div>
     );

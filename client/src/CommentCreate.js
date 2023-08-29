@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 
+// to associate created comments to the specific post -postId- prop is passed from PostList to CommentCreate
 export default ({ postId }) => {
   const [content, setContent] = useState("");
 
