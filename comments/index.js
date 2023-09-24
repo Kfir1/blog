@@ -11,6 +11,8 @@ const { randomBytes } = require("crypto");
 // handling cors errors
 const cors = require("cors");
 
+const axios = require("axios");
+
 const app = express();
 
 // parse body of request to json
@@ -32,7 +34,7 @@ app.get("/posts/:id/comments", (req, res) => {
 });
 
 // route for POST new posts
-app.post("/posts/:id/comments", (req, res) => {
+app.post("/posts/:id/comments", async (req, res) => {
   //create random id with randomBytes method
   // 4 bytes of data, convert to string in hex
   const commentId = randomBytes(4).toString("hex");
@@ -49,8 +51,23 @@ app.post("/posts/:id/comments", (req, res) => {
 
   commentsByPostId[req.params.id] = comments;
 
+  await axios.post("http://localhost:4005/events", {
+    type: "CommentCreated",
+    data: {
+      id: commentId,
+      content,
+      postId: req.params.id, // data will come from dynamic url id ("/posts/:id/comments")
+    },
+  });
+
   // send response to user - 201 (created a resource)
   res.status(201).send(comments);
+});
+
+app.post("/events", (req, res) => {
+  console.log("Received Event:", req.body.type);
+
+  res.send({});
 });
 
 // listen on port 4001 - chose different port from posts service 4000 port

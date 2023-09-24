@@ -8,7 +8,8 @@ const app = express();
 // associate the body parser json middleware with the new express app
 app.use(bodyParser.json());
 
-// set post handler to event bus
+// set post handler to event bus.
+// /events is the path
 app.post("/events", (req, res) => {
   // in the request body could be everything
   // it will be sent to the different running services

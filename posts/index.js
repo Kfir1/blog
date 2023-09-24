@@ -11,6 +11,9 @@ const { randomBytes } = require("crypto");
 // handling cors errors
 const cors = require("cors");
 
+// added axios for for event-bus request
+const axios = require("axios");
+
 const app = express();
 
 // parse body of request to json
@@ -30,7 +33,7 @@ app.get("/posts", (req, res) => {
 });
 
 // route for POST new posts
-app.post("/posts", (req, res) => {
+app.post("/posts", async (req, res) => {
   //create random id with randomBytes
   // 4 bytes of data, convert to string in hex
   const id = randomBytes(4).toString("hex");
@@ -46,8 +49,26 @@ app.post("/posts", (req, res) => {
   // Object { id: Object { id: id, title: req.body } }
   // posts[id] same as posts.id
 
+  // send the event to the event-bus (on port 4005)
+  // first property of the event will be type: PostCreated(for example)
+  // second property of the event will be object (data).
+  // it is an async process, so await needed
+  await axios.post("http://localhost:4005/events", {
+    type: "PostCreated",
+    data: {
+      id,
+      title,
+    },
+  });
+
   // send response to user - 201 (created a resource)
   res.status(201).send(posts[id]);
+});
+
+app.post("/events", (req, res) => {
+  console.log("Received Event:", req.body.type);
+
+  res.send({});
 });
 
 // listen on port 4000
