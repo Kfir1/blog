@@ -8,8 +8,9 @@ export default () => {
   const [posts, setPosts] = useState({});
 
   const fetchPosts = async () => {
-    const res = await axios.get("http://localhost:4000/posts");
-    // posts service is hosted on port 4001
+    // port 4002 is where query service is running
+    const res = await axios.get("http://localhost:4002/posts");
+    console.log(res.data);
     setPosts(res.data);
   };
 
@@ -29,7 +30,8 @@ export default () => {
       >
         <div className="card-body">
           <h3>{post.title}</h3>
-          <CommentList postId={post.id} />
+          {/* pass comments directly and render them out */}
+          <CommentList comments={post.comments} />
           <CommentCreate postId={post.id} /> {/* show comment by post id */}
         </div>
       </div>
