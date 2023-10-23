@@ -10,7 +10,7 @@ export default () => {
   const fetchPosts = async () => {
     // port 4002 is where query service is running
     const res = await axios.get("http://localhost:4002/posts");
-    console.log(res.data);
+
     setPosts(res.data);
   };
 
