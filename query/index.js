@@ -40,15 +40,27 @@ app.post("/events", (req, res) => {
   if (type === "CommentCreated") {
     // destructure
     // every post created will have id, title and postId
-    const { id, content, postId } = data;
+    const { id, content, postId, status } = data;
 
     // find the relevant post to update inside of the posts object with postId
     const post = posts[postId];
     // push the new comment to relevant post inside posts = {} object
     // comment will have a given id and some content
-    post.comments.push({ id, content });
+    // status will be pending/approveed/rejected
+    post.comments.push({ id, content, status });
   }
+  if (type === "CommentUpdated") {
+    const { id, content, postId, status } = data;
 
+    const post = posts[postId];
+    // find comment with appropriate post
+    const comment = post.comments.find((comment) => {
+      return comment.id === id;
+    });
+
+    comment.status = status;
+    comment.content = content;
+  }
   // to see the data structure of posts on terminal on the query service
   console.log(posts);
 

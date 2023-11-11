@@ -47,16 +47,18 @@ app.post("/posts/:id/comments", async (req, res) => {
 
   // push into array the new comment created
   // content is the user content of comment
-  comments.push({ id: commentId, content });
+  comments.push({ id: commentId, content, status: "pending" });
 
   commentsByPostId[req.params.id] = comments;
 
+  // event bus is on port 4005
   await axios.post("http://localhost:4005/events", {
     type: "CommentCreated",
     data: {
       id: commentId,
       content,
       postId: req.params.id, // data will come from dynamic url id ("/posts/:id/comments")
+      status: "pending",
     },
   });
 
@@ -64,8 +66,35 @@ app.post("/posts/:id/comments", async (req, res) => {
   res.status(201).send(comments);
 });
 
-app.post("/events", (req, res) => {
+app.post("/events", async (req, res) => {
   console.log("Received Event:", req.body.type);
+
+  const { type, data } = req.body;
+
+  if (type === "CommentModerated") {
+    const { postId, id, status, content } = data;
+
+    // get comments by postId from commentsByPostId data structure
+    const comments = commentsByPostId[postId];
+
+    // iterate through comment to find the appropriate comment to update
+    const comment = comments.find((comment) => {
+      // comment variable will hold the comment with the same id or if not found will be undefined
+      return comment.id === id;
+    });
+    // update the status from pending to approved || rejected
+    comment.status = status;
+
+    await axios.post("http://localhost:4005/events", {
+      type: "CommentUpdated",
+      data: {
+        id,
+        content,
+        postId, // data will come from dynamic url id ("/posts/:id/comments")
+        status,
+      },
+    });
+  }
 
   res.send({});
 });
