@@ -16,14 +16,17 @@ app.post("/events", async (req, res) => {
     // check if comment contains "orange" - if yes reject else approve
     const status = data.content.includes("orange") ? "rejected" : "approved";
 
-    await axios.post("http://localhost:4005/events", {
-      type: "CommentModerated",
-      data: {
-        id: data.id, // comment id
-        content: data.content, // content of comment
-        postId: data.postId, // ID of post
-        status, // status of comment
-      },
+    setTimeout(async () => {
+      await axios.post("http://localhost:4005/events", {
+        type: "CommentModerated",
+        data: {
+          id: data.id, // comment id
+          content: data.content, // content of comment
+          postId: data.postId, // ID of post
+          status, // status of comment
+        },
+      }),
+        3000;
     });
   }
 

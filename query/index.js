@@ -6,6 +6,8 @@ const bodyParser = require("body-parser");
 
 const cors = require("cors");
 
+const axios = require("axios");
+
 const app = express();
 
 app.use(bodyParser.json());
@@ -15,17 +17,7 @@ app.use(cors());
 // posts database structure will be an object
 const posts = {};
 
-// 2 route handlers:
-// this endpoint will send posts information
-app.get("/posts", (req, res) => {
-  // to get the entire posts object
-  res.send(posts);
-});
-// this endpoint will receive events from the event bus
-app.post("/events", (req, res) => {
-  // destructure
-  const { type, data } = req.body;
-
+const handleEvent = (type, data) => {
   if (type === "PostCreated") {
     // destructure
     // every post created will have id and title
@@ -61,14 +53,38 @@ app.post("/events", (req, res) => {
     comment.status = status;
     comment.content = content;
   }
-  // to see the data structure of posts on terminal on the query service
-  console.log(posts);
+};
+
+// 2 route handlers:
+// this endpoint will send posts information
+app.get("/posts", (req, res) => {
+  // to get the entire posts object
+  res.send(posts);
+});
+// this endpoint will receive events from the event bus
+app.post("/events", (req, res) => {
+  // destructure
+  const { type, data } = req.body;
+
+  handleEvent(type, data);
 
   // send some response - manage the route handler
   // got the event and proccessed it
   res.send({});
 });
 
-app.listen(4002, () => {
+app.listen(4002, async () => {
   console.log("Listening on port 4002");
+  try {
+    // make request to get all event made up to actual time
+    const res = await axios.get("http://localhost:4005/events");
+
+    for (let event of res.data) {
+      console.log("Processing event:", event.type);
+
+      handleEvent(event.type, event.data);
+    }
+  } catch (error) {
+    console.log(error.message);
+  }
 });

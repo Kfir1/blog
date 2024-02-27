@@ -8,10 +8,15 @@ export default () => {
   const [posts, setPosts] = useState({});
 
   const fetchPosts = async () => {
-    // port 4002 is where query service is running
-    const res = await axios.get("http://localhost:4002/posts");
+    try {
+      // port 4002 is where query service is running
+      const res = await axios.get("http://localhost:4002/posts");
 
-    setPosts(res.data);
+      setPosts(res.data);
+    } catch (error) {
+      // Handle the error
+      console.error("Error fetching posts:", error);
+    }
   };
 
   // call useEffect to fetch posts only once

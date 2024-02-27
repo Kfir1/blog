@@ -7,12 +7,17 @@ export default () => {
   const submitHandler = async (event) => {
     event.preventDefault();
 
-    // first argument on post service will be the URL and second will be the object with title (post)
-    await axios.post("http://localhost:4000/posts", {
-      title,
-    });
-    // then set title state to empty string
-    setTitle("");
+    try {
+      // first argument on post service will be the URL and second will be the object with title (post)
+      await axios.post("http://localhost:4000/posts", {
+        title,
+      });
+      // then set title state to empty string
+      setTitle("");
+    } catch (error) {
+      // Handle the error
+      console.error("Error submitting post:", error);
+    }
   };
 
   return (
