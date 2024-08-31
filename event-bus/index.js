@@ -1,4 +1,4 @@
-// keep event-bus service from crashing while query service is down
+// prevent event-bus service crashing while query service is down
 process.on("uncaughtException", function (err) {
   console.log(err);
 });
